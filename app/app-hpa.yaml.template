@@ -1,0 +1,21 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-${APP}-cpu-utilization
+  namespace: ${NAMEPSPACE}
+  labels:
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: ${APP}-deploy
+    apiVersion: apps/v1
+  minReplicas: 2
+  maxReplicas: 20
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: ${APP}-container
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80

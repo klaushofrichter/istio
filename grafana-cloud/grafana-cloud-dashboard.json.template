@@ -1,0 +1,489 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Information about ${APP}",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 17,
+  "iteration": 1639270040912,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "${GRAFANACLOUDPROM}",
+      "description": "Project name from package.json",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 9,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^appName$/",
+          "values": false
+        },
+        "text": {},
+        "textMode": "value"
+      },
+      "pluginVersion": "8.2.7",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "${APP}_server_info",
+          "format": "table",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Application Name",
+      "type": "stat"
+    },
+    {
+      "datasource": "${GRAFANACLOUDPROM}",
+      "description": "Application version from package.json",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 9,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^serverVersion$/",
+          "values": false
+        },
+        "text": {},
+        "textMode": "value"
+      },
+      "pluginVersion": "8.2.7",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "${APP}_server_info",
+          "format": "table",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Application Version",
+      "type": "stat"
+    },
+    {
+      "datasource": "${GRAFANACLOUDLOGS}",
+      "description": "Shows a timeline of logs with color coded level",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Warning"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Info"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Debug"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Trace"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#0bd6bedb",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 17,
+        "x": 0,
+        "y": 3
+      },
+      "id": 13,
+      "interval": "2s",
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "expr": "count_over_time({app=\"${APP}\"}[$__interval] |~ `\"level\":\"${loglevel:regex}\"`|~ `\"level\":\"info\"`)",
+          "hide": false,
+          "legendFormat": "Info",
+          "refId": "Info"
+        },
+        {
+          "expr": "count_over_time({app=\"${APP}\"}[$__interval] |~ `\"level\":\"${loglevel:regex}\"` |~ `\"level\":\"debug\"`)",
+          "hide": false,
+          "legendFormat": "Debug",
+          "refId": "Debug"
+        },
+        {
+          "expr": "count_over_time({app=\"${APP}\"}[$__interval] |~ `\"level\":\"${loglevel:regex}\"`|~ `\"level\":\"error\"`)",
+          "hide": false,
+          "legendFormat": "Error",
+          "refId": "Error"
+        },
+        {
+          "expr": "count_over_time({app=\"${APP}\"}[$__interval] |~ `\"level\":\"${loglevel:regex}\"` |~ `\"level\":\"trace\"`)",
+          "hide": false,
+          "legendFormat": "Trace",
+          "refId": "Trace"
+        },
+        {
+          "expr": "count_over_time({app=\"${APP}\"}[$__interval] |~ `\"level\":\"${loglevel:regex}\"` |~ `\"level\":\"critical\"`)",
+          "hide": false,
+          "legendFormat": "Critical",
+          "refId": "Critical"
+        },
+        {
+          "expr": "count_over_time({app=\"${APP}\"}[$__interval] |~ `\"level\":\"${loglevel:regex}\"` |~ `\"level\":\"warning\"`)",
+          "hide": false,
+          "legendFormat": "Warning",
+          "refId": "Warning"
+        }
+      ],
+      "title": "Logs Timeline ",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${GRAFANACLOUDLOGS}",
+      "description": "Showing Logs over Time",
+      "gridPos": {
+        "h": 9,
+        "w": 17,
+        "x": 0,
+        "y": 9
+      },
+      "id": 7,
+      "options": {
+        "dedupStrategy": "exact",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": true,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "pluginVersion": "8.2.6",
+      "targets": [
+        {
+          "expr": "{app=\"${APP}\"} |~ `\"level\":\"${loglevel:regex}\"`",
+          "groupBy": [],
+          "instant": false,
+          "legendFormat": "",
+          "measurement": "host_cpu",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "range": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "*"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Logs (${loglevel:regex})",
+      "transformations": [],
+      "type": "logs"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 32,
+  "style": "dark",
+  "tags": [
+    "${APP}"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": "critical|error|warning|info|debug|trace",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "loglevel",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "critical",
+            "value": "critical"
+          },
+          {
+            "selected": false,
+            "text": "error",
+            "value": "error"
+          },
+          {
+            "selected": false,
+            "text": "warning",
+            "value": "warning"
+          },
+          {
+            "selected": false,
+            "text": "info",
+            "value": "info"
+          },
+          {
+            "selected": false,
+            "text": "debug",
+            "value": "debug"
+          },
+          {
+            "selected": false,
+            "text": "trace",
+            "value": "trace"
+          }
+        ],
+        "query": "critical, error, warning, info, debug, trace",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "${APP} Application Information",
+  "uid": "${APP}-2021-12-11-loki",
+  "version": 35
+}

@@ -1,0 +1,12 @@
+
+    [OUTPUT]
+        Name loki
+        Match ${APP}
+        host ${LOKI_METRICS_PUBLISHER_URL}
+        port 443
+        tls on
+        tls.verify on
+        labels app=${APP}
+        http_user ${LOKI_METRICS_PUBLISHER_USER}
+        http_passwd ${GRAFANA_CLOUD_METRICS_PUBLISHER_PASS}
+

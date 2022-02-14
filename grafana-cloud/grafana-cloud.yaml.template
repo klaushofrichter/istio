@@ -1,0 +1,96 @@
+kind: ConfigMap
+metadata:
+  name: grafana-agent
+apiVersion: v1
+data:
+  agent.yaml: |    
+    server:
+      http_listen_port: 12345
+    prometheus:
+      wal_directory: /tmp/grafana-agent-wal
+      global:
+        scrape_interval: 60s
+        external_labels:
+          cluster: ${CLUSTER}
+      configs:
+      - name: integrations
+        remote_write:
+        - url: ${PROM_METRICS_PUBLISHER_URL}
+          basic_auth:
+            username: ${PROM_METRICS_PUBLISHER_USER}
+            password: ${GRAFANA_CLOUD_METRICS_PUBLISHER_PASS}
+
+        scrape_configs:
+
+        - job_name: myapp-service
+          metrics_path: "/service/metrics"
+          kubernetes_sd_configs:
+              - role: service
+          metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: myapp_server_info
+                action: keep
+
+        - job_name: myapp-pod
+          metrics_path: "/service/metrics"
+          kubernetes_sd_configs:
+              - role: pod
+          metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: myapp_server_info
+                action: keep
+
+        - job_name: integrations/kubernetes/cadvisor
+          bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          kubernetes_sd_configs:
+              - role: node
+          metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: ${KEEP}
+                action: keep
+          relabel_configs:
+              - replacement: kubernetes.default.svc.cluster.local:443
+                target_label: __address__
+              - regex: (.+)
+                replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+                source_labels:
+                  - __meta_kubernetes_node_name
+                target_label: __metrics_path__
+          scheme: https
+          tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              insecure_skip_verify: false
+              server_name: kubernetes
+        - job_name: integrations/kubernetes/kubelet
+          bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          kubernetes_sd_configs:
+              - role: node
+          metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: ${KEEP}
+                action: keep
+          relabel_configs:
+              - replacement: kubernetes.default.svc.cluster.local:443
+                target_label: __address__
+              - regex: (.+)
+                replacement: /api/v1/nodes/${1}/proxy/metrics
+                source_labels:
+                  - __meta_kubernetes_node_name
+                target_label: __metrics_path__
+          scheme: https
+          tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              insecure_skip_verify: false
+              server_name: kubernetes
+        - job_name: integrations/kubernetes/kube-state-metrics
+          kubernetes_sd_configs:
+              - role: service
+          metric_relabel_configs:
+              - source_labels: [__name__]
+                regex: ${KEEP}
+                action: keep
+          relabel_configs:
+              - action: keep
+                regex: prom-kube-state-metrics
+                source_labels:
+                  - __meta_kubernetes_service_name

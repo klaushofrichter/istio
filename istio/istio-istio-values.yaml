@@ -1,0 +1,46 @@
+pilot:
+  autoscaleEnabled: true
+  autoscaleMin: 1
+  autoscaleMax: 2
+  replicaCount: 1
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 200Mi
+    limits:
+      cpu: 100m
+      memory: 400Mi
+
+  cpu:
+    targetAverageUtilization: 80
+
+global:
+  istioNamespace: istio-system
+
+  defaultResources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+  proxy:
+    resources:
+      requests:
+        cpu: 40m
+        memory: 64Mi
+      limits:
+        cpu: 150m
+        memory: 128Mi
+
+  proxy_init:
+    image: proxyv2
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
+      limits:
+        cpu: 80m
+        memory: 100Mi

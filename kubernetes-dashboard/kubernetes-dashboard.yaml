@@ -1,0 +1,38 @@
+#
+# adding cluster-admin rights to the default dashboard user (only for local use)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-dashboard
+    namespace: kubernetes-dashboard
+    apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+#
+# adding service monitor as the config via values seems not to work (in version 5.1.1)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: prom
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+spec:
+  endpoints:
+  - interval: 30s
+    targetPort: 9090
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - kubernetes-dashboard
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubernetes-dashboard

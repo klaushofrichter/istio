@@ -1,0 +1,4 @@
+alertmanager.url: http://localhost:${HTTPPORT}/alert
+author: amtool
+tls.insecure.skip.verify: true
+timeout: 30s

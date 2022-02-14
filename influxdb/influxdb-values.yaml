@@ -1,0 +1,20 @@
+service:
+  type: NodePort
+
+setDefaultUser:
+  enabled: true
+  user:
+    username: "admin"
+
+env:
+  - name: INFLUXDB_DB
+    value: "fluentbit"
+
+# per Goldilock recommendation for burstable 
+resources:
+  requests:
+    cpu: 10m
+    memory: 26M
+  limits:
+    cpu: 33m
+    memory: 40M

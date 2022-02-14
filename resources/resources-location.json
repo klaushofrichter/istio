@@ -1,0 +1,112 @@
+[
+	{ "ns": "istio-system",
+	  "resource": [
+	    {"name": "istiod", "containers": [
+	        { "container-name": "discovery", "location": "istio/istio-istio-values.yaml" }]}]
+	},
+	{ "ns": "istio-gateway",
+	  "resource": [
+	    {"name": "istio-gateway", "containers": [
+	        { "container-name": "istio-proxy", "location": "istio/istio-gateway-values.yaml" }]},
+	    {"name": "svclb-istio-gateway", "containers": [
+	        { "container-name": "lb-port-81", "location": "istio/istio-deploy.sh" },
+	        { "container-name": "lb-port-443", "location": "istio/istio-deploy.sh" },
+	        { "container-name": "lb-port-15021", "location": "istio/istio-deploy.sh" }]}]
+	},
+	{ "ns": "kubernetes-dashboard",
+	  "resource": [
+	    {"name": "kubernetes-dashboard", "containers": [
+	        { "container-name": "kubernetes-dashboard", "location": "kubernetes-dashboard/kubernetes-dashboard-values.yaml.template" },
+	        { "container-name": "dashboard-metrics-scraper", "location": "kubernetes-dashboard/kubernetes-dashboard-deploy.sh" }]}]
+	},
+	{ "ns": "nginx",
+	  "resource": [
+	    {"name": "nginx", "containers": [
+	        { "container-name": "nginx", "location": "nginx/nginx-values.yaml.template" },
+	        { "container-name": "metrics", "location": "nginx/nginx-values.yaml.template" },
+	        { "container-name": "git-repo-syncer", "location": "nginx/nginx-deploy.sh" }]}]
+	},
+	{ "ns": "fluentbit",
+	  "resource": [
+	    {"name": "fluentbit-fluent-bit", "containers": [
+	        { "container-name": "fluent-bit", "location": "fluentbit/fluentbit-values.yaml.template" }]}]
+	},
+	{ "ns": "goldilocks",
+	  "resource": [ 
+	    {"name": "goldilocks-controller", "containers": [
+	        { "container-name": "goldilocks", "location": "goldilocks/goldilocks-values.yaml.template" }]},
+	    {"name": "goldilocks-dashboard", "containers": [
+	        { "container-name": "goldilocks", "location": "goldilocks/goldilocks-values.yaml.template" }]},
+	    {"name": "goldilocks-vpa-recommender", "containers": [
+	        { "container-name": "vpa", "location": "goldilocks/goldilocks-deploy.sh" }]}]
+	},
+	{ "ns": "keda",
+	  "resource": [ 
+	    {"name": "keda-operator", "containers": [
+	        { "container-name": "keda-operator", "location": "keda/keda-values.yaml.template" }]},
+	    {"name": "keda-operator-metrics-apiserver", "containers": [
+	        { "container-name": "keda-operator-metrics-apiserver", "location": "keda/keda-deploy.sh" }]}]
+	},
+	{ "ns": "grafana-cloud",
+	  "resource":	[
+            {"name": "grafana-agent", "containers": [
+	        { "container-name": "agent", "location": "grafana-cloud/grafana-cloud-deploy.sh" }]}]
+	},
+	{ "ns": "influxdb",
+	  "resource":	[
+	    {"name": "influxdb-stats-exporter-deployment", "containers": [
+	        { "container-name": "influxdb-stats-exporter-container", "location": "influxdb/influxdb-stats-exporter.yaml.template" }]},
+	    {"name": "influxdb-ui-deployment", "containers": [
+	        { "container-name": "influxdb-ui-container", "location": "influxdb/influxdb-ui.yaml.template" }]},
+	    {"name": "influxdb", "containers": [
+	        { "container-name": "influxdb", "location": "influxdb/influxdb-values.yaml" }]}]
+	},
+	{ "ns": "ingress-nginx",
+	  "resource":	[
+	    {"name": "svclb-ingress-nginx-controller", "containers": [
+	        { "container-name": "lb-port-443", "location": "ingress-nginx/ingress-nginx-deploy.sh" }]},
+	    {"name": "svclb-ingress-nginx-controller", "containers": [
+	        { "container-name": "lb-port-80", "location": "ingress-nginx/ingress-nginx-deploy.sh" }]},
+	    {"name": "ingress-nginx-controller", "containers": [
+	        { "container-name": "controller", "location": "ingress-nginx/ingress-nginx-values.yaml" }]}]
+	},
+	{ "ns": "kube-system",
+	  "resource":	[
+	    {"name": "coredns", "containers": [
+	        { "container-name": "coredns", "location": "start.sh" }]},
+	    {"name": "local-path-provisioner", "containers": [
+	        { "container-name": "local-path-provisioner", "location": "start.sh" }]},
+	    {"name": "metrics-server", "containers": [
+	        { "container-name": "metrics-server", "location": "start.sh" }]}]
+	},
+	{ "ns": "monitoring",
+	  "resource":  	[
+	    {"name": "prom-prometheus-node-exporter", "containers": [
+	        { "container-name": "node-exporter", "location": "prom/prom-values.yaml.template" }]},
+	    {"name": "prom-grafana", "containers": [
+	        { "container-name": "grafana", "location": "prom/prom-values.yaml.template" },
+	        { "container-name": "grafana-sc-dashboard", "location": "prom/prom-deploy.sh" },
+	        { "container-name": "grafana-sc-datasources", "location": "prom/prom-deploy.sh" }]},
+	    {"name": "prom-kube-prometheus-stack-operator", "containers": [
+	        { "container-name": "kube-prometheus-stack", "location": "prom/prom-values.yaml.template" }]},
+	    {"name": "prom-kube-state-metrics", "containers": [
+	        { "container-name": "kube-state-metrics", "location": "prom/prom-deploy.sh" }]},
+	    {"name": "alertmanager-prom-kube-prometheus-stack-alertmanager", "containers": [
+	        { "container-name": "alertmanager", "location": "prom/am-values.yaml.template" },
+	        { "container-name": "config-reloader", "location": "prom/prom-deploy.sh" }]},
+	    {"name": "prometheus-prom-kube-prometheus-stack-prometheus", "containers": [
+	        { "container-name": "config-reloader", "location": "prom/prom-deploy.sh" },
+	        { "container-name": "prometheus", "location": "prom/prom-values.yaml.template" }]}
+	    ]
+	},
+	{ "ns": "myapp-green",
+	  "resource":	[
+          {"name": "myapp-deploy", "containers": [
+	     { "container-name": "myapp-container", "location": "app/app.yaml.template" }]}]
+	},
+	{ "ns": "myapp-blue",
+	  "resource":	[
+          {"name": "myapp-deploy", "containers": [
+	     { "container-name": "myapp-container", "location": "app/app.yaml.template" }]}]
+	}
+]

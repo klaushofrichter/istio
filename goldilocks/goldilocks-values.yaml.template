@@ -1,0 +1,43 @@
+
+vpa:
+  enabled: true
+  updater:
+    enabled: false # VPA does not actually scale, only recommends
+
+dashboard:
+  enabled: true
+  replicaCount: 1
+  service:
+    type: NodePort
+  excludeContainers: ""
+  resources:
+    limits:
+      cpu: 180m
+      memory: 100Mi
+    requests:
+      cpu: 60m
+      memory: 60Mi
+
+#
+#  Can't use the Helm ingress facility, it seems to use depreciated APIs?  
+#    Update: version 5.x of the chart updates to current APIs, but as --base-path does
+#    not work in Goldilocks we don't use the ingress here.
+#    See https://github.com/FairwindsOps/goldilocks/issues/185
+#
+#  ingress:
+#    # dashboard.ingress.enabled -- Enables an ingress object for the dashboard.
+#    enabled: true
+#    annotations:
+#      kubernetes.io/ingress.class: nginx
+#      nginx.ingress.kubernetes.io/rewrite-target: /$2
+#    hosts:
+#      - host: localhost
+#        paths:
+#        - path: /goldilocks(/|$)(.*)
+#          pathType: Prefix
+#          backend:
+#            service:
+#              name: goldilocks-dashboard-service
+#              port: 
+#                number: 80
+

@@ -1,0 +1,20 @@
+# This is the slack configuration belonging to ./am-values.yaml.template. 
+# It will be loaded in addition to am-values.yaml.template if ${SLACK_ENABLE} is set to "yes"
+
+      - name: "slack"
+        slack_configs:
+          - send_resolved: true
+            api_url: ${SLACKWEBHOOK}
+            title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] Monitoring Event Notification'
+            text: >-
+              {{ range .Alerts }}
+                *Alert:* {{ .Annotations.summary }} - `{{ .Labels.severity }}`
+                *Description:* {{ .Annotations.description }}
+                *Runbook:* {{ .Annotations.runbook_url }}
+                *Graph:* <{{ .GeneratorURL }}|Click to see Graph>, if available. Port ${HTTPPORT} may be missing in the URL.
+                *Details:*
+                {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+                {{ end }}
+              {{ end }}
+
+

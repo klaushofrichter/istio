@@ -1,0 +1,51 @@
+# https://github.com/danesparza/influxdb-ui
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-ui-deployment
+  namespace: influxdb
+  labels:
+    app: influxdb-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb-ui
+  template:
+    metadata:
+      name: influxdb-ui
+      labels:
+        app: influxdb-ui
+    spec:
+      containers:
+        - name: influxdb-ui-container
+          #image: sillydong/influxdb-ui:latest
+          image: bradyemerson/influxdb-ui:2.0.239
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100M
+            limits:
+              cpu: 40m
+              memory: 200M
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-ui-service
+  namespace: influxdb
+  labels:
+    app: influxdb-ui
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: ${INFLUXUIPORT}
+  selector:
+    app: influxdb-ui
+

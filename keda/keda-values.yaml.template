@@ -1,0 +1,61 @@
+logging:
+  operator:
+    ## Logging level for KEDA Operator
+    # allowed values: 'debug', 'info', 'error', or an integer value greater than 0, specified as string
+    # default value: info
+    level: info
+    # allowed values 'json' or 'console'
+    # default value: console
+    format: console
+  metricServer:
+    ## Logging level for Metrics Server
+    # allowed values: '0' for info, '4' for debug, or an integer value greater than 0, specified as string
+    # default value: 0
+    level: 0
+
+service:
+  type: ClusterIP
+  portHttp: 80
+  portHttpTarget: 8080
+  portHttps: 443
+  portHttpsTarget: 6443
+
+  annotations: {}
+
+# The resources limits/requests are for both controller and metrics server.
+# The value for metrics server is overwitten in keda-deploy.sh if RESOURCEPATCH is "yes"
+resources: 
+  limits:
+    cpu: 50m
+    memory: 150Mi
+  requests:
+    cpu: 15m
+    memory: 50Mi
+
+prometheus:
+  metricServer:
+    enabled: true
+    podMonitor:
+      enabled: true
+      additionalLabels:
+        release: prom
+  operator:
+    enabled: true
+    podMonitor:
+      enabled: true
+      additionalLabels:
+        release: prom
+    prometheusRules:
+      enabled: true
+      namespace: keda
+      additionalLabels: 
+        release: prom
+      alerts:
+         - alert: KedaScalerErrors
+           annotations:
+             description: Keda scaledObject {{ $labels.scaledObject }} is experiencing errors with {{ $labels.scaler }} scaler
+             summary: Keda Scaler {{ $labels.scaler }} Errors
+           expr: sum by ( scaledObject , scaler) (rate(keda_metrics_adapter_scaler_errors[2m]))  > 0
+           for: 2m
+           labels:
+             severity: warn

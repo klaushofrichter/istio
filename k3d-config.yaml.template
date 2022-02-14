@@ -1,0 +1,45 @@
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+metadata:
+  name: ${CLUSTER}
+# servers: 1
+# agents: 2
+kubeAPI:
+  host: localhost
+  hostIP: "127.0.0.1"
+  hostPort: "6445"
+#image: rancher/k3s:v1.22.2-k3s2
+image: rancher/k3s:v1.23.3-k3s1
+ports:
+  - port: ${HTTPPORT}:80
+    nodeFilters:
+      - loadbalancer
+  - port: ${ISTIOPORT}:81
+    nodeFilters:
+      - loadbalancer
+  - port: ${INFLUXUIPORT}:${INFLUXUIPORT}
+    nodeFilters:
+      - loadbalancer
+  - port: ${INFLUXPORT}:${INFLUXPORT}
+    nodeFilters:
+      - loadbalancer
+  - port: ${GOLDILOCKSPORT}:${GOLDILOCKSPORT}
+    nodeFilters:
+      - loadbalancer
+options:
+  k3d:
+    wait: true
+    timeout: "150s" 
+    disableImageVolume: false
+    disableLoadbalancer: false
+  k3s:
+    extraArgs:
+      - arg: --no-deploy=traefik
+        nodeFilters:
+          - server:*
+      - arg: --kube-apiserver-arg=feature-gates=HPAContainerMetrics=true
+        nodeFilters:
+          - server:*
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true

@@ -1,0 +1,109 @@
+# https://coralogix.com/blog/fluent-bit-guide/
+
+# for troubleshooting, uncomment the loglevel below and see the pod logs
+#logLevel: trace
+
+image:
+  repository: fluent/fluent-bit
+  # Overrides the image tag whose default is {{ .Chart.AppVersion }}. This image has a shell.
+  tag: "1.8.10-debug"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 2020
+  nodePort: 30020
+  annotations:
+    prometheus.io/path: "/api/v1/metrics/prometheus"
+    prometheus.io/port: "2020"
+    prometheus.io/scrape: "true"
+
+serviceMonitor:
+  enabled: true
+  namespace: fluentbit
+  interval: 15s
+  scrapeTimeout: 15s
+  jobLabel: fluentbit
+  selector:
+    release: prom
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 100M
+  limits:
+    cpu: 100m
+    memory: 300M
+
+daemonSetVolumes:
+  - name: varlog
+    hostPath:
+      path: /var/log
+  - name: varlibdockercontainers
+    hostPath:
+      path: /var/lib/docker/containers
+  - name: etcmachineid
+    configMap:
+      name: etcmachineidcm
+
+daemonSetVolumeMounts:
+  - name: varlog
+    mountPath: /var/log
+  - name: varlibdockercontainers
+    mountPath: /var/lib/docker/containers
+    readOnly: true
+  - name: etcmachineid
+    mountPath: /etc/machine-id
+    subPath: machine-id
+
+config:
+
+  service: |
+
+    [SERVICE]
+        Daemon Off
+        Flush 10
+        Log_Level {{ .Values.logLevel }}
+        Parsers_File parsers.conf
+        Parsers_File custom_parsers.conf
+        HTTP_Server On
+        HTTP_Listen 0.0.0.0
+        HTTP_Port {{ .Values.service.port }}
+        Health_Check On
+
+  inputs: |
+
+    [INPUT]
+        Name tail
+        Path /var/log/containers/${APP}-deploy-*_${APP}-container-*.log
+        multiline.parser docker, cri
+        Tag ${APP}
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+
+  filters: |
+
+    [FILTER]
+        Name parser
+        Parser docker
+        Match ${APP}
+        Key_name log
+        Reserve_Data true
+        Preserve_Key false
+
+    [FILTER]
+        Name modify
+        Match ${APP}
+        Remove stream
+        Remove _p
+
+  outputs: |
+
+    [OUTPUT]
+        Name influxdb
+        Match ${APP}
+        Host influxdb.influxdb
+        Port 8086
+        HTTP_User admin
+        HTTP_Passwd ${INFLUXDB_LOCAL_ADMIN_PASSWORD}
+

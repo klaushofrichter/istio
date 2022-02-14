@@ -1,0 +1,45 @@
+extraArgs:
+  - --enable-insecure-login
+  - --enable-skip-login
+protocolHttp: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 150m
+    memory: 150Mi
+
+service:
+  type: ClusterIP
+  externalPort: 9090
+
+  ## Enable or disable the kubernetes.io/cluster-service label. Should be disabled for GKE clusters >=1.15.
+  ## Otherwise, the addon manager will presume ownership of the service and try to delete it.
+  clusterServiceLabel:
+    enabled: false
+    key: "kubernetes.io/cluster-service"
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  className: nginx
+  paths:
+    - /dashboard(/|$)(.*)
+  hosts:
+    - localhost
+
+settings:
+  clusterName: "${CLUSTER}"
+  itemsPerPage: 10
+  logsAutoRefreshTimeInterval: 10
+  resourceAutoRefreshTimeInterval: 10
+  disableAccessDeniedNotifications: false
+
+serviceMonitor:
+  enabled: false   # enabling this with "true" does not seem to work
+
+metricsScraper:
+  enabled: true

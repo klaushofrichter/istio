@@ -1,0 +1,32 @@
+controller:
+  containerPort:
+    http: 80
+    https: 443
+
+  service:
+    enableHttp: true
+    enableHttps: false
+    ports:
+      http: 80
+      https: 443
+    targetPorts:
+      http: http
+      https: https
+
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prom
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200M
+    limits:
+      cpu: 900m
+      memory: 600M

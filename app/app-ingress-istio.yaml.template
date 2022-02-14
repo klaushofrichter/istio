@@ -1,0 +1,20 @@
+# This is an ingress routing to the Istio Gateway as secondary route
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${APP}-ingress
+  namespace: istio-gateway
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /service
+            pathType: Prefix
+            backend:
+              service:
+                name: istio-gateway
+                port:
+                  number: 81
+

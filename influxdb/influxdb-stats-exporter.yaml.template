@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-stats-exporter-deployment
+  namespace: influxdb
+  labels:
+    app: influxdb-stats-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb-stats-exporter
+  template:
+    metadata:
+      name: influxdb-stats-exporter
+      labels:
+        app: influxdb-stats-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9424"
+    spec:
+      containers:
+        - name: influxdb-stats-exporter-container
+          image: carlpett/influxdb_stats_exporter
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9424
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100M
+            limits:
+              cpu: 30m
+              memory: 150M
+          env:
+            - name: INFLUX_URL
+              value: http://influxdb.influxdb:8086
+            - name: INFLUX_USER
+              value: admin
+            - name: INFLUX_PASSWORD
+              value: ${INFLUXDB_LOCAL_ADMIN_PASSWORD}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-stats-exporter-service
+  namespace: influxdb
+  labels:
+    app: influxdb-stats-exporter
+spec:
+  ports:
+    - port: 9424
+  selector:
+    app: influxdb-stats-exporter
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: prom
+  name: influxdb-sm
+  namespace: influxdb
+spec:
+  endpoints:
+    - interval: 30s
+      targetPort: 9424
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - influxdb
+  selector:
+    matchLabels:
+      app: influxdb-stats-exporter

@@ -1,0 +1,3 @@
+global:
+  istioNamespace: istio-system
+

@@ -1,0 +1,164 @@
+defaultRules:
+  create: true
+  rules:
+    etcd: false
+    kubeScheduler: false
+
+#
+# The rules moved to app/app-prometheus.yaml.template
+# (closer to the subject of the alerts)
+#
+#additionalPrometheusRulesMap:
+#  rule-name:
+#    groups:
+#      - name: ${APP}
+#        rules:
+#          - alert: AlertmanagerTest
+#            expr: vector(1)
+#            labels:
+#              severity: info
+#            annotations:
+#              summary: "Test Autofire"
+#              description: "This fires after 30 seconds automatically for test."
+#              runbook_url: https://www.google.com/search?q=AlertmanagerTest
+#
+#          - alert: ${APP}Down
+#            expr: absent(up{job="${APP}-service"} == 1)
+#            for: 1m
+#            labels:
+#              severity: critical
+#            annotations:
+#              summary: "No ${APP} Service Provision"
+#              description: "The ${APP}-service does not provide an UP signal."
+#              runbook_url: https://www.google.com/search?q=KubernetesAppDown
+#
+#
+#          - alert: ${APP}Pods
+#            expr: count(${APP}_server_info{job="${APP}-service"}) > 2
+#            for: 10s
+#            labels:
+#              severity: warn
+#            annotations:
+#              summary: "More than two pods in ${APP}"
+#              description: "There are more than two ${APP} running! We may have scaled up even more?"
+#              runbook_url: https://www.google.com/search?q=kubectl
+#
+#          - alert: ${APP}Pods
+#            expr: count(${APP}_server_info{job="${APP}-service"}) > 3
+#            for: 20s
+#            labels:
+#              severity: warn
+#            annotations:
+#              summary: "More than three pods in ${APP}"
+#              description: "There are more than three ${APP} pods running. Total pod number is {{ printf \"%.0f\" $value }}."
+#              runbook_url: https://www.google.com/search?q=scaleup
+#
+#          - alert: ${APP}Pods
+#            expr: count(${APP}_server_info{job="${APP}-service"}) > 15
+#            for: 10s
+#            labels:
+#              severity: critical
+#            annotations:
+#              summary: "There are {{ $value }} pods in ${APP}"
+#              description: "There are {{ $value }} ${APP} pods running! We need a bigger machine!"
+#              runbook_url: https://www.google.com/search?q=reboot
+#
+#          - alert: ${APP}CPULimit
+#            expr: sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{container="${APP}-container"})/sum(kube_pod_container_resource_limits{resource="cpu", container="${APP}-container"}) * 100 > 80
+#            for: 1s
+#            labels:
+#              severity: info
+#            annotations:
+#              summary: "80% CPU Limit exceeded"
+#              description: "${APP} pods consume more than 80% of CPU Limit. Value is {{ printf \"%.0f\" $value }}%"
+#              runbook_url: https://www.google.com/search?q=dualcorecpu
+#
+#          - alert: ${APP}CPULimit
+#            expr: sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{container="${APP}-container"})/sum(kube_pod_container_resource_limits{resource="cpu", container="${APP}-container"}) * 100 > 100
+#            for: 1s
+#            labels:
+#              severity: critical
+#            annotations:
+#              summary: "100% CPU Limit exceeded"
+#              description: "${APP} pods consume more than 100% of CPU Limit. Value is {{ printf \"%.0f\" $value }}%"
+#              runbook_url: https://www.google.com/search?q=octacorecpu
+#
+#          - alert: ${APP}CPURequest
+#            expr: (sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{container="${APP}-container"}) / sum(cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{container="${APP}-container"})) * 100  > 50
+#            for: 10s
+#            labels:
+#              severity: warn
+#            annotations:
+#              summary: "More than 50% CPU Request"
+#              description: "${APP} pods consume more 50% CPU Request, specifically {{ printf \"%.0f\" $value }}%"
+#              runbook_url: https://www.google.com/search?q=cpu_request
+
+alertmanager:
+  ingress:
+    enabled: true
+    hosts:
+      - localhost
+    path: /alert
+    ingressClassName: nginx
+  admissionWebhooks:
+    enabled: false
+    patch:
+      enabled: false
+  tlsProxy.enabled: false
+  serviceAccount:
+    create: true
+    name: ""
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: ""
+
+  alertmanagerSpec:
+    routePrefix: /alert
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50M
+      limits:
+        cpu: 20m
+        memory: 100M
+
+  config:
+
+    route:
+
+      # everything goes to Slack by default. There are routes to other places when needed. 
+      # if SLACK_ENABLE is "yes", SLACK_OR_NULL is "slack", otherwise "null". 
+      receiver: "${SLACK_OR_NULL}"
+      group_by: ["severity"]
+      group_wait: 30s
+      group_interval: 2m
+      repeat_interval: 12h
+      routes:
+        - match:
+            severity: "info"
+          receiver: "null"
+        - match:
+            alertname: "${APP}Down"
+          repeat_interval: 2m
+        - match:
+            severity: "critical"
+          repeat_interval: 10m
+    inhibit_rules:
+      - source_match:
+          severity: "warn"
+        target_match:
+          severity: "info"
+        equal:
+          - alertname
+      - source_match:
+          severity: "critical"
+        target_match_re:
+          severity: "(warn|info)"
+        equal:
+          - alertname
+    receivers:
+      - name: "null" 
+#
+# The Slack configuration is loaded separately depending on the SLACK_ENABLE feature flag
+# see ./am-values-slack.yaml.template

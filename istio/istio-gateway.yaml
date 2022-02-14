@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-gateway
+  namespace: istio-gateway
+spec:
+  selector:
+    app: istio-gateway
+  servers:
+  - port:
+      number: 81
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
