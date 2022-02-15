@@ -16,7 +16,7 @@ echo "GRAFANA_CLOUD_ENABLE: ${GRAFANA_CLOUD_ENABLE} - controls if grafana-cloud 
 echo "GOLDILOCKS_ENABLE: ${GOLDILOCKS_ENABLE} - controls if goldilocks is deployed."
 echo "KUBERNETES_DASHBOARD_ENABLE: ${KUBERNETES_DASHBOARD_ENABLE} - controls if Kubernetes Dashboard is deployed."
 echo "KEDA_ENABLE: ${KEDA_ENABLE} - controls if keda is deployed."
-echo "HPA_ENABLE: ${HPA_ENABLE} - controls if hpa is deployed. "yes" here disables KEDA_ENABLE."
+echo "HPA_ENABLE: ${HPA_ENABLE} - controls if hpa is deployed. \"yes\" here disables KEDA_ENABLE."
 echo "NGINX: ${NGINX_ENABLE} - controls if nginx is deployed"
 echo "ISTIO: ${ISTIO_ENABLE} - controls if istio is deployed"
 echo "RESOURCEPATCH: ${RESOURCEPATCH} - controls if resource settings are patched everywhere."
