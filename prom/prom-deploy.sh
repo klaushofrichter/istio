@@ -173,7 +173,7 @@ echo "done"
 if [ "${ISTIO_ENABLE}" == "yes" ]; then
 
   echo
-  echo "==== $0: Install Istio Dashboards for version ${ISTIOCHART}"
+  echo "==== $0: Install Istio Dashboards for version ${ISTIODCHART}"
   # see https://istio.io/latest/docs/ops/integrations/grafana/
   GRAFANA_HOST="http://localhost:${HTTPPORT}/grafana"
   GRAFANA_CRED="admin:${GRAFANA_LOCAL_ADMIN_PASS}"
